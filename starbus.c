@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <conio.h>
+
 #include "time.h"
 #include "Bool.h"
 #define limpiar() system("cls")
@@ -14,7 +15,6 @@ char terminal[30] = "FESC Izcalli Edomex";
 
 
 int main(int argc, char *argv[]) {
-
 	int success = FALSE;
 
 	do
@@ -114,7 +114,9 @@ void muestraMenu(int type){
 			printf("\t+-----------------------------------------------------------+\n");
 		break;
 		case 2:
-			printf("\n");
+			printf("\t+-------------------------------------------------------------------------------------------+\n");
+			printf("\t| SELEECIONE DESTINO -> ELIJA ASIENTO -> VERIFICAR IFORMACION -> CONFIRMA VENTA | SALIR (0) |\n");
+			printf("\t+-------------------------------------------------------------------------------------------+\n");
 		break;
 	}
 }
@@ -143,14 +145,18 @@ void menuPrincipal(){
 		switch(opc){
 			case 1:
 				muestraInfo();
-				muestraDestinos();
 				muestraMenu(1);
+				muestraDestinos();
 				printf("\n\t\tEIJA UNA OPCION: ");
 				int opc;
 				scanf("%i",&opc);
 			break;
 			case 2:
-				printf("\t\tVENTA\n");
+				muestraInfo();
+				muestraMenu(2);
+				muestraDestinos();
+				printf("\t\tSELECCIONE DESTINO:  ");
+				scanf("%i",&opc);
 			break;
 			case 3:
 				printf("\ttADMINISTRACION\n");
@@ -166,13 +172,15 @@ void menuPrincipal(){
 }
 
 void muestraDestinos(){
-	printf("___________________________________\n");
-	printf("| Puebla Pue. ........ $240.00    |\n");
-	printf("| Xalapa Ver. ........ $540.00    |\n");
-	printf("| Tlaxcala Tlax. ..... $200.00    |\n");
-	printf("| Pachuca Hgo. ....... $300.00    |\n");
-	printf("| Matamoros Tam. ..... $1200.00   |\n");
-	printf("|_________________________________|\n");
+	printf("\t\t\t\t_____________________________________________________\n");
+	printf("\t\t\t\t| ID   DESTINO         ASIENTOS  COSTO     SALIDA   |\n");
+	printf("\t\t\t\t| 1    Puebla Pue.       40/40   $240.00    15:40   |\n");
+	printf("\t\t\t\t| 2    Xalapa Ver.       35/40   $540.00    03:50   |\n");
+	printf("\t\t\t\t| 3    Tlaxcala Tlax.    20/30   $200.00    21:40   |\n");
+	printf("\t\t\t\t| 4    Pachuca Hgo.      10/30   $300.00    10:00   |\n");
+	printf("\t\t\t\t| 5    Matamoros Tam.    40/40   $1200.00   09:45   |\n");
+	printf("\t\t\t\t| 5    Cuernavaca Mor.   01/40   $560.00    14:30   |\n");
+	printf("\t\t\t\t|___________________________________________________|\n");
 }
 
 /*
@@ -189,3 +197,7 @@ fechaHora(){
 	strftime(fechayhora, 100, "%d/%m/%Y", tm);
 	printf ("%s", fechayhora);
 }
+
+
+
+
