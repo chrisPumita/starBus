@@ -41,7 +41,7 @@ int main(int argc, char *argv[]) {
 	return 0;
 }
 /*
-	|------------------------------- PARA EL INICIO DE LA SESION ---------------------|
+	|------------------------------- PARA EL INICIO DE LA SES0'ION ---------------------|
 */
 int verificaUser(){
 	Bool value = FALSE;
@@ -82,14 +82,16 @@ int verificaUser(){
 
 void printLogo(){
 	limpiar();
+	printf("\E[45;33;5m*******************************************************************************************\E[00m\n");
 	printf("\t\n");
-	printf("\t  _____ _______       _____  ____  _    _  _____         /\\      \n");
-	printf("\t / ____|__   __|/\\   |  __ \\|  _ \\| |  | |/ ____|       /  \\      \n");
-	printf("\t| (___    | |  /  \\  | |__) | |_) | |  | | (___        /    \\    \n");
-	printf("\t \\___ \\   | | / /\\ \\ |  _  /|  _ <| |  | |\\___ \\______/      \\________   \n");
-	printf("\t ____) |  | |/ ____ \\| | \\ \\| |_) | |__| |____) |   _| _  |   o _    /     \n");
-	printf("\t|_____/   |_/_/    \\_\\_|  \\_\\____/ \\____/|_____/   (_|(/_ ||_||(_)  /     \n");
-	printf("\t                                                             _|    /          \n");
+	printf("\t  _____ _______       _____  ____  _    _  _____    \E[33;36;5m     /\\      \E[00m\n");
+	printf("\t / ____|__   __|/\\   |  __ \\|  _ \\| |  | |/ ____|\E[33;36;5m       /  \\      \E[00m\n");
+	printf("\t| (___    | |  /  \\  | |__) | |_) | |  | | (___    \E[33;36;5m    /    \\    \E[00m\n");
+	printf("\t \\___ \\   | | / /\\ \\ |  _  /|  _ <| |  | |\\___ \\\E[33;36;5m______/      \\________  \E[00m \n");
+	printf("\t ____) |  | |/ ____ \\| | \\ \\| |_) | |__| |____) |   _| _  |   o _    \E[33;36;5m/     \E[00m\n");
+	printf("\t|_____/   |_/_/    \\_\\_|  \\_\\____/ \\____/|_____/   (_|(/_ ||_||(_)  \E[33;36;5m/     \E[00m\n");
+	printf("\t                                                             _|    \E[33;36;5m/          \E[00m\n");
+	printf("\E[45;33;5m*******************************************************************************************\E[00m\n");
 }
 
 void muestraTituloMenu(int type){
@@ -109,9 +111,9 @@ void muestraMenu(int type){
 	switch(type){
 		case 1:
 			printf("\n");
-			printf("\t+-----------------------------------------------------------+\n");
-			printf("\t| DESTINOS (1) | VENTA (2) | ADMINISTRACION (3) | SALIR (0) |\n");
-			printf("\t+-----------------------------------------------------------+\n");
+			printf("\t+-----------------------------------------------------------------------------+\n");
+			printf("\t| DESTINOS (1) | VENTA (2) | ADMINISTRACION (3) | CALCULADORA (4) | SALIR (0) |\n");
+			printf("\t+-----------------------------------------------------------------------------+\n");
 		break;
 		case 2:
 			printf("\t+-------------------------------------------------------------------------------------------+\n");
@@ -130,9 +132,9 @@ void muestraInfo(){
 
 	printLogo();
 	muestraTituloMenu(2);
-	printf("\n\t\tUSER: %s\tFECHA: ",nomreUser);
+	printf("\n\t\tUSER: %s\n\t\tFECHA: ",nomreUser);
 	fechaHora();
-	printf("\n\t\tTERMINAL: %s\n\n",terminal);
+	printf("\tTERMINAL: %s\n\n",terminal);
 }
 
 void menuPrincipal(){
@@ -147,7 +149,7 @@ void menuPrincipal(){
 				muestraInfo();
 				muestraMenu(1);
 				muestraDestinos();
-				printf("\n\t\tEIJA UNA OPCION: ");
+				printf("\t\t\t Presiona cualquier numero para regresar \n");
 				int opc;
 				scanf("%i",&opc);
 			break;
@@ -157,9 +159,32 @@ void menuPrincipal(){
 				muestraDestinos();
 				printf("\t\tSELECCIONE DESTINO:  ");
 				scanf("%i",&opc);
+				muestraInfo();
+				muestraMenu(2);
+				muestraBus(opc);
+				printf("\t\tSELECCIONE ASIENTO:  ");
+				scanf("%i",&opc);
+				int asiento = verificaAsiento(1,opc);
+				muestraInfo();
+				muestraMenu(2);
+				char nombre[50];
+				printf("\t\tESCRIBA NOMBRE DEL PASAJERO:  ");
+				scanf("%s",nombre);
+				printf("\t\tPasajero: %s ASIENTO: %d\n",nombre, asiento);
+				printf("\t\t PROCEDER A PAGO (Y/N) ");
+				char termina;
+				scanf("%c",&termina);
+				if (termina == 'Y')
+				{
+					/* SE PROCEDERA AL PAGO */
+				}
+
 			break;
 			case 3:
 				printf("\ttADMINISTRACION\n");
+			break;
+			case 4:
+				system("calc.exe");
 			break;
 			case 0:
 				printLogo();
@@ -199,5 +224,45 @@ fechaHora(){
 }
 
 
+void muestraBus(int id){
+	//id es el numero del corrida
+	int asiento;
+	//Consultando la corrida
+	printf("\tCORRIDA: FES - DESTINO \t HORA: 15:30 \tDISPONIBLES: 25/32");
+	printf("\t\E[37;41;5m[XX]\E[00m -> OCUPADO  \E[37;42;5m[00]\E[00m -> DISPONIBLE\n");
 
+	printf("\t\t\t\t__________________________\n");
+	printf("\t\t\t\t| |(O)|                  |\n");	
+	printf("\t\t\t\t|                        |\n");	
+	printf("\t\t\t\t| [01] [02]    [03] [04] |\n");
+	printf("\t\t\t\t| [05] \E[37;41;5m[XX]\E[00m    [07] [08] |\n");
+	printf("\t\t\t\t| [09] [10]    [11] [12] |\n");
+	printf("\t\t\t\t| [12] [14]    [15] [16] |\n");
+	printf("\t\t\t\t| [17] \E[37;41;5m[XX]\E[00m    [19] [20] |\n");
+	printf("\t\t\t\t| [21] [22]    [23] [24] |\n");
+	printf("\t\t\t\t| [25] [26]    [27] [28] |\n");
+	printf("\t\t\t\t| [29] [30]    [31] [32] |\n");
+	printf("\t\t\t\t|                        |\n");
+	printf("\t\t\t\t| [  W C  ]    [  W C  ] |\n");
+	printf("\t\t\t\t|________________________|\n");
+}
 
+int verificaAsiento(int id, int asiento){
+	//iniciamos el llenado del array de asientos del ID de corrida
+	int tam;
+	tam = 33;
+	int isFree = 0;
+	int asientos[] = {0,0,0,0,0,0,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};
+	//llenado de asientos
+	while (isFree !=1){
+		if (asientos[asiento-1] != 0)
+			isFree = 1;
+		else{
+			printf("\n\t\t \E[37;41;5mAsiento ocupado\E[00m elija otro: ");
+			scanf("%d",&asiento);
+			isFree = 0;
+		}
+
+	}
+	return asiento;
+}
