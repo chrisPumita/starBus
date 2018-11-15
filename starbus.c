@@ -122,7 +122,7 @@ void DesplegarEmpleados()
 
 void agregaEmpleado(int indice)
 {
-	FILE* arch=fopen(FILE_NAME_EMP,"r+b");
+	FILE* arch=fopen("empleados.dat","w+b");
 	//Ingresa los datos por consola
 	Empleado reg = ingresaDatosxConsola(indice);
 	//Posicion del puntero al final del archivo .dat
@@ -372,16 +372,18 @@ void menuPrincipal(){
 			case 3:
 				muestraMenu(3);
 				printf("Elija una opcion ");
-				scanf("%d",opc);
+				scanf("%d",&opc);
 				if (opc == 1)
 				{
 					/* Selijio agregar destino AUN NO DISPONIBLE*/
+					system("pause");
 				}
 				else if (opc == 2)
 				{
 					/* Eligio agregar usuarios */
 					printf("Agregando nuevo empleado\n");
 					agregaEmpleado(1);
+					system("pause");
 				}
 			break;
 			case 4:
