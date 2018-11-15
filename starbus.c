@@ -5,8 +5,13 @@
 
 #include "time.h"
 #include "Bool.h"
+
 #define limpiar() system("cls")
 #define FILE_NAME_EMP "empleados.dat"
+/* run this program using the console pauser or add your own getch, system("pause") or input loop */
+char mje[20]="";
+char nomreUser[30];
+char terminal[30] = "FESC Izcalli Edomex";
 
  struct empleado_Type
  {
@@ -18,17 +23,52 @@
  };
  typedef struct empleado_Type Empleado;
 
+void leerEmpleado(FILE * arch, Empleado* reg)
+{
+	fread(reg,sizeof(Empleado),1,arch);
+}
 
-/* run this program using the console pauser or add your own getch, system("pause") or input loop */
-char mje[20]="";
-char nomreUser[30];
-char terminal[30] = "FESC Izcalli Edomex";
+void grabaEmpleado(FILE* arch, Empleado* reg)
+{
+	fwrite(reg,sizeof(Empleado),1,arch);
+}
 
+Empleado creaEmpleado(int id, char nombre[], char user[], char password[], int status)
+{
+	Empleado x;
+	x.id = id;
+	strcpy(x.nombre, nombre);
+	strcpy(x.user, user);
+	strcpy(x.password, password);
+	x.status=status;
+	return x;
+}
+
+Empleado ingresaDatosxConsola(int indice)
+{
+	char nombre[30];
+	char user[20];
+	char password[20];
+
+	printf("Ingrese nombre del empleado: ->");
+	scanf("%s",&nombre);
+
+	printf("Ingrese Usuario: ->");
+	scanf("%s",&user);	
+
+	printf("Ingrese ingrese password: ->");
+	scanf("%s",&password);	
+
+	Empleado x;
+	x.id = indice;
+	strcpy(x.nombre, nombre);
+	strcpy(x.user, user);
+	strcpy(x.password, password);
+	x.status = 1;
+	return x;
+}
 //declarando las estructuras.
 //
-
-
-
 
 int main(int argc, char *argv[]) {
 	int success = FALSE;
