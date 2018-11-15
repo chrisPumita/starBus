@@ -3,6 +3,7 @@
 #include <string.h>
 #include <conio.h>
 
+#include "Empleados.h"
 #include "time.h"
 #include "Bool.h"
 
@@ -13,15 +14,33 @@ char mje[20]="";
 char nomreUser[30];
 char terminal[30] = "FESC Izcalli Edomex";
 
- struct empleado_Type
- {
- 	int id;
- 	char nombre[20];
- 	char user[10];
- 	char password[10];
- 	int status;
- };
- typedef struct empleado_Type Empleado;
+
+int main(int argc, char *argv[]) {
+	int success = FALSE;
+
+	do
+	{
+		limpiar();
+		printLogo();
+		muestraTituloMenu(1);
+		puts(mje);
+		int access = verificaUser();
+		if (access == TRUE)
+		{
+			menuPrincipal();
+			success = TRUE;
+		}
+		else{
+			printf("\n\tERROR \n");
+			strcat(mje, "\t ERROR ");
+			success = FALSE;
+		}
+		
+	}
+	while(success != TRUE);
+
+	return 0;
+}
 
 void leerEmpleado(FILE * arch, Empleado* reg)
 {
@@ -67,35 +86,144 @@ Empleado ingresaDatosxConsola(int indice)
 	x.status = 1;
 	return x;
 }
+
+void DesplegarEmpleados()
+{
+	if (buscaUltimo() !=0)
+	{
+		printf("NO HAY REGISTROS AUN\n");
+	}
+	else{
+		printf("SI HAY REGITROS\n");
+		FILE* arch;
+		Empleado a;
+
+		//Abrimos el archivo para lectura
+		arch = fopen(FILE_NAME_EMP, "r+b");
+		//La primera leida la hacemos fuera del while
+		printf("TIITLE\n");
+		leerEmpleado(arch,&a);
+		while(!feof(arch))
+		{
+			printf("%d ",a.id);
+			printf("%s\t",a.user);
+			printf("%s\t",a.nombre);
+			printf("%s\t",a.password);
+			printf("%d",a.status);
+			printf("\n");
+			//leemos el sig registro del archivo
+	//		fread(&a,sizeof(Empleado),1,arch);
+			leerEmpleado(arch,&a);
+		}
+		fclose(arch);
+	}
+}
+
+
+void agregaEmpleado(int indice)
+{
+	FILE* arch=fopen(FILE_NAME_EMP,"r+b");
+	//Ingresa los datos por consola
+	Empleado reg = ingresaDatosxConsola(indice);
+	//Posicion del puntero al final del archivo .dat
+	fseek(arch,0,SEEK_END);
+	fwrite(&reg,sizeof(Empleado),1,arch);
+	fclose(arch);
+}
+
+ void buscaEmpleadoIndex(int index)
+ {
+	FILE* arch=fopen(FILE_NAME_EMP,"r+b");
+	int n = index;
+	//Posiciono el puntero del archivo
+	fseek(arch,n*sizeof(Empleado),SEEK_SET);
+
+	//con el puntero posicionado, leo el registro
+	Empleado reg;
+	fread(&reg,sizeof(Empleado),1,arch);
+
+	//muestro los datos de ese archivo
+	printf("Detalles del Empleado:\n");
+	printf("ID......: %d\n",reg.id);
+	printf("user....: %s\n",reg.user);
+	printf("NOMBRE:.: %s\n",reg.nombre);
+	printf("STOCK:..: %d\n",reg.status);
+	printf("\n");
+	fclose(arch);
+ }
+
+  int buscaEmpleadoUser(char code[])
+ {
+	FILE* arch=fopen(FILE_NAME_EMP,"r+b");
+	Empleado aux;
+	int index = 0;
+	// ->>>> BUSCANDO DATO
+	// fread(reg,sizeof(Empleado),1,arch);
+	while(fread(&aux, sizeof(aux),1,arch)!=0 && strcmp(aux.user,code)!=0)
+	{
+		index++;
+	}
+	//printf("altumo %d index%d\n",buscaUltimo(), index );
+	//clear();
+	fclose(arch);
+	if(buscaUltimo()<=index)
+		return 0;
+	else
+	return index;
+	// ->> END
+ }
+
+ int buscaUltimo()
+ {
+ 	FILE* arch;
+	Empleado a;
+	int i;
+	//Abrimos el archivo para lectura
+	arch = fopen(FILE_NAME_EMP, "r+b");
+	leerEmpleado(arch,&a);
+	while(!feof(arch))
+	{
+		i = a.id;
+		//leemos el sig registro del archivo
+		leerEmpleado(arch,&a);
+	}
+	fclose(arch);
+	if (i<0)
+	{
+		i = 0;
+	}
+	//i++;
+	return i;
+ }
+
+/*
+
+  void modificarRegistro()
+ {
+//Funcion para modificar un elemento especifico
+	FILE* arch=fopen(FILE_NAME_EMP,"r+b");
+	int n;
+	printf("Ingrese el ID a modificar: ->");
+	scanf("%d",&n);
+	fflush(stdout);
+	printf("Mostrando información del ID: %d\n",n);
+	
+	buscaProductoIndex(n-1);
+
+	//ingreso los nuevos datos por consola
+	Empleado reg = ingresaDatosxConsola(n);
+	n--;
+	//Posicion del indentificaro de posicion
+	fseek(arch,n*sizeof(Empleado),SEEK_SET);
+
+	//Grabo el registro reescribiendo
+	fwrite(&reg,sizeof(Empleado),1,arch);
+	fclose(arch); 	
+ }
+ */
 //declarando las estructuras.
 //
 
-int main(int argc, char *argv[]) {
-	int success = FALSE;
-
-	do
-	{
-		limpiar();
-		printLogo();
-		muestraTituloMenu(1);
-		puts(mje);
-		int access = verificaUser();
-		if (access == TRUE)
-		{
-			menuPrincipal();
-			success = TRUE;
-		}
-		else{
-			printf("\n\tERROR \n");
-			strcat(mje, "\t ERROR ");
-			success = FALSE;
-		}
-		
-	}
-	while(success != TRUE);
-
-	return 0;
-}
 
 /*
 	|------------------------------- PARA EL INICIO DE LA SES0'ION ---------------------|
@@ -161,8 +289,13 @@ void muestraMenu(int type){
 		break;
 		case 2:
 			printf("\t+-------------------------------------------------------------------------------------------+\n");
-			printf("\t| SELEECIONE DESTINO -> ELIJA ASIENTO -> VERIFICAR IFORMACION -> CONFIRMA VENTA | SALIR (0) |\n");
+			printf("\t| SELECIONE DESTINO -> ELIJA ASIENTO -> VERIFICAR IFORMACION -> CONFIRMA VENTA | SALIR (0) |\n");
 			printf("\t+-------------------------------------------------------------------------------------------+\n");
+		break;
+		case 3:
+			printf("\t+-----------------------+----------------------+-----------+\n");
+			printf("\t| AGREGAR CORRIDAS  [1] | AGREGAR EMPLEADO [2] | SALIR [0] |\n");
+			printf("\t+-----------------------+----------------------+-----------+\n");
 		break;
 	}
 }
@@ -206,9 +339,8 @@ void menuPrincipal(){
 				muestraInfo();
 				muestraMenu(1);
 				muestraDestinos();
-				printf("\t\t\t Presiona cualquier numero para regresar \n");
-				int opc;
-				scanf("%i",&opc);
+				DesplegarEmpleados();
+				system("pause");
 			break;
 			case 2:
 				muestraInfo();
@@ -238,7 +370,19 @@ void menuPrincipal(){
 
 			break;
 			case 3:
-				printf("\ttADMINISTRACION\n");
+				muestraMenu(3);
+				printf("Elija una opcion ");
+				scanf("%d",opc);
+				if (opc == 1)
+				{
+					/* Selijio agregar destino AUN NO DISPONIBLE*/
+				}
+				else if (opc == 2)
+				{
+					/* Eligio agregar usuarios */
+					printf("Agregando nuevo empleado\n");
+					agregaEmpleado(1);
+				}
 			break;
 			case 4:
 				system("calc.exe");
@@ -263,6 +407,10 @@ void muestraDestinos(){
 	printf("\t\t\t\t| 5    Matamoros Tam.    40/40   $1200.00   09:45   |\n");
 	printf("\t\t\t\t| 5    Cuernavaca Mor.   01/40   $560.00    14:30   |\n");
 	printf("\t\t\t\t|___________________________________________________|\n");
+}
+
+void menuAdmin(){
+
 }
 
 /*
@@ -330,3 +478,12 @@ int imprimirTicket(int venta){
 	system("pause");
 	return 1;
 }
+
+#if 0
+int main()
+{
+nuevaVenta();
+	return 0;
+	
+}
+#endif
