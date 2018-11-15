@@ -6,12 +6,28 @@
 #include "time.h"
 #include "Bool.h"
 #define limpiar() system("cls")
+#define FILE_NAME_EMP "empleados.dat"
+
+ struct empleado_Type
+ {
+ 	int id;
+ 	char nombre[20];
+ 	char user[10];
+ 	char password[10];
+ 	int status;
+ };
+ typedef struct empleado_Type Empleado;
 
 
 /* run this program using the console pauser or add your own getch, system("pause") or input loop */
 char mje[20]="";
 char nomreUser[30];
 char terminal[30] = "FESC Izcalli Edomex";
+
+//declarando las estructuras.
+//
+
+
 
 
 int main(int argc, char *argv[]) {
@@ -40,6 +56,7 @@ int main(int argc, char *argv[]) {
 
 	return 0;
 }
+
 /*
 	|------------------------------- PARA EL INICIO DE LA SES0'ION ---------------------|
 */
@@ -80,19 +97,6 @@ int verificaUser(){
 }
 
 
-void printLogo(){
-	limpiar();
-	printf("\E[45;33;5m*******************************************************************************************\E[00m\n");
-	printf("\t\n");
-	printf("\t  _____ _______       _____  ____  _    _  _____    \E[33;36;5m     /\\      \E[00m\n");
-	printf("\t / ____|__   __|/\\   |  __ \\|  _ \\| |  | |/ ____|\E[33;36;5m       /  \\      \E[00m\n");
-	printf("\t| (___    | |  /  \\  | |__) | |_) | |  | | (___    \E[33;36;5m    /    \\    \E[00m\n");
-	printf("\t \\___ \\   | | / /\\ \\ |  _  /|  _ <| |  | |\\___ \\\E[33;36;5m______/      \\________  \E[00m \n");
-	printf("\t ____) |  | |/ ____ \\| | \\ \\| |_) | |__| |____) |   _| _  |   o _    \E[33;36;5m/     \E[00m\n");
-	printf("\t|_____/   |_/_/    \\_\\_|  \\_\\____/ \\____/|_____/   (_|(/_ ||_||(_)  \E[33;36;5m/     \E[00m\n");
-	printf("\t                                                             _|    \E[33;36;5m/          \E[00m\n");
-	printf("\E[45;33;5m*******************************************************************************************\E[00m\n");
-}
 
 void muestraTituloMenu(int type){
 	switch(type){
@@ -123,6 +127,19 @@ void muestraMenu(int type){
 	}
 }
 
+void printLogo(){
+	limpiar();
+	printf("\E[45;33;5m*******************************************************************************************\E[00m\n");
+	printf("\t\n");
+	printf("\t  _____ _______       _____  ____  _    _  _____    \E[33;36;5m     /\\      \E[00m\n");
+	printf("\t / ____|__   __|/\\   |  __ \\|  _ \\| |  | |/ ____|\E[33;36;5m       /  \\      \E[00m\n");
+	printf("\t| (___    | |  /  \\  | |__) | |_) | |  | | (___    \E[33;36;5m    /    \\    \E[00m\n");
+	printf("\t \\___ \\   | | / /\\ \\ |  _  /|  _ <| |  | |\\___ \\\E[33;36;5m______/      \\________  \E[00m \n");
+	printf("\t ____) |  | |/ ____ \\| | \\ \\| |_) | |__| |____) |   _| _  |   o _    \E[33;36;5m/     \E[00m\n");
+	printf("\t|_____/   |_/_/    \\_\\_|  \\_\\____/ \\____/|_____/   (_|(/_ ||_||(_)  \E[33;36;5m/     \E[00m\n");
+	printf("\t                                                             _|    \E[33;36;5m/          \E[00m\n");
+	printf("\E[45;33;5m*******************************************************************************************\E[00m\n");
+}
 /*
 	|------------------------------- PARA EL INICIO DE LA SESION ---------------------|
 */
@@ -167,16 +184,16 @@ void menuPrincipal(){
 				int asiento = verificaAsiento(1,opc);
 				muestraInfo();
 				muestraMenu(2);
-				char nombre[50];
+				char nombreUser[30];
 				printf("\t\tESCRIBA NOMBRE DEL PASAJERO:  ");
-				scanf("%s",nombre);
-				printf("\t\tPasajero: %s ASIENTO: %d\n",nombre, asiento);
+				scanf("%s", &nombreUser);
+				printf("\t\tPasajero: %s ASIENTO: %d\n",nombreUser, asiento);
 				printf("\t\t PROCEDER A PAGO (Y/N) ");
-				char termina;
-				scanf("%c",&termina);
-				if (termina == 'Y')
+				char termina[1];
+				scanf("%s",&termina[0]);
+				if (termina[0] == 'Y' || termina[0] == 'y')
 				{
-					/* SE PROCEDERA AL PAGO */
+					imprimirTicket();
 				}
 
 			break;
@@ -265,4 +282,11 @@ int verificaAsiento(int id, int asiento){
 
 	}
 	return asiento;
+}
+
+
+int imprimirTicket(int venta){
+	printf("TICKETTTT\n");
+	system("pause");
+	return 1;
 }
