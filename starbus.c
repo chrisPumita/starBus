@@ -4,6 +4,7 @@
 #include <conio.h>
 
 #include "Empleados.h"
+#include "Corridas.h"
 #include "time.h"
 #include "Bool.h"
 
@@ -41,7 +42,9 @@ int main(int argc, char *argv[]) {
 
 	return 0;
 }
-
+/*
+	************* APARTADO DE EMPLEADOS
+ */
 void leerEmpleado(FILE * arch, Empleado* reg)
 {
 	fread(reg,sizeof(Empleado),1,arch);
@@ -63,19 +66,19 @@ Empleado creaEmpleado(int id, char nombre[], char user[], char password[], int s
 	return x;
 }
 
-Empleado ingresaDatosxConsola(int indice)
+Empleado ingresaDatosxConsolaEMP(int indice)
 {
 	char nombre[30];
 	char user[20];
 	char password[20];
 
-	printf("Ingrese nombre del empleado: ->");
+	printf("\t\tIngrese nombre del empleado: ->");
 	scanf("%s",&nombre);
 
-	printf("Ingrese Usuario: ->");
+	printf("\t\tIngrese Usuario: ->");
 	scanf("%s",&user);	
 
-	printf("Ingrese ingrese password: ->");
+	printf("\t\tIngrese ingrese password: ->");
 	scanf("%s",&password);	
 
 	Empleado x;
@@ -89,28 +92,29 @@ Empleado ingresaDatosxConsola(int indice)
 
 void DesplegarEmpleados()
 {
-	if (buscaUltimo() !=0)
+	if (buscaUltimoEMP() ==0)
 	{
 		printf("NO HAY REGISTROS AUN\n");
 	}
 	else{
-		printf("SI HAY REGITROS\n");
 		FILE* arch;
 		Empleado a;
 
 		//Abrimos el archivo para lectura
 		arch = fopen(FILE_NAME_EMP, "r+b");
 		//La primera leida la hacemos fuera del while
-		printf("TIITLE\n");
+		printf("\t\tID\tUsername\t\Nombre\n");
 		leerEmpleado(arch,&a);
 		while(!feof(arch))
 		{
-			printf("%d ",a.id);
-			printf("%s\t",a.user);
-			printf("%s\t",a.nombre);
-			printf("%s\t",a.password);
-			printf("%d",a.status);
-			printf("\n");
+			printf("\t\t%d ",a.id);
+			printf("\t%s",a.user);
+			printf("\t%s",a.nombre);
+			if (a.status == 1)
+				printf("\t\tACTIVO\t");
+			else
+				printf("\t\tINACTIVO");
+			printf("\t\t\n");
 			//leemos el sig registro del archivo
 	//		fread(&a,sizeof(Empleado),1,arch);
 			leerEmpleado(arch,&a);
@@ -122,9 +126,9 @@ void DesplegarEmpleados()
 
 void agregaEmpleado(int indice)
 {
-	FILE* arch=fopen("empleados.dat","w+b");
+	FILE* arch=fopen("empleados.dat","a+b");
 	//Ingresa los datos por consola
-	Empleado reg = ingresaDatosxConsola(indice);
+	Empleado reg = ingresaDatosxConsolaEMP(indice);
 	//Posicion del puntero al final del archivo .dat
 	fseek(arch,0,SEEK_END);
 	fwrite(&reg,sizeof(Empleado),1,arch);
@@ -163,26 +167,24 @@ void agregaEmpleado(int indice)
 	{
 		index++;
 	}
-	//printf("altumo %d index%d\n",buscaUltimo(), index );
+	//printf("altumo %d index%d\n",buscaUltimoEMP(), index );
 	//clear();
 	fclose(arch);
-	if(buscaUltimo()<=index)
+	if(buscaUltimoEMP()<=index)
 		return 0;
 	else
 	return index;
 	// ->> END
  }
 
- int buscaUltimo()
- {
+ int buscaUltimoEMP(){
  	FILE* arch;
 	Empleado a;
 	int i;
 	//Abrimos el archivo para lectura
 	arch = fopen(FILE_NAME_EMP, "r+b");
 	leerEmpleado(arch,&a);
-	while(!feof(arch))
-	{
+	while(!feof(arch)){
 		i = a.id;
 		//leemos el sig registro del archivo
 		leerEmpleado(arch,&a);
@@ -211,7 +213,7 @@ void agregaEmpleado(int indice)
 	buscaProductoIndex(n-1);
 
 	//ingreso los nuevos datos por consola
-	Empleado reg = ingresaDatosxConsola(n);
+	Empleado reg = ingresaDatosxConsolaEMP(n);
 	n--;
 	//Posicion del indentificaro de posicion
 	fseek(arch,n*sizeof(Empleado),SEEK_SET);
@@ -224,6 +226,218 @@ void agregaEmpleado(int indice)
 //declarando las estructuras.
 //
 
+/*
+	************* APARTADO DE CORRIDAS
+ */
+void leerCorrida(FILE * arch, Corrida* reg)
+{
+	fread(reg,sizeof(Corrida),1,arch);
+}
+
+void grabaCorrida(FILE* arch, Corrida* reg)
+{
+	fwrite(reg,sizeof(Corrida),1,arch);
+}
+
+Corrida creaCorrida(int id, char cdDes[], char edoDes[], int Aocu, int Adis, float costo, int horaS, int minS)
+{
+	Corrida x;
+	x.id = id;
+	strcpy(x.cdDes, cdDes);
+	strcpy(x.edoDes, edoDes);
+	x.Aocu=Aocu;
+	x.Adis=Adis;
+//	x.asientos=asientos;
+	x.costo=costo;
+	x.horaS=horaS;
+	x.minS=minS;
+	return x;
+}
+
+Corrida ingresaDatosxConsolaCOR(int indice)
+{
+ 	char cdDes[20];
+ 	char edoDes[20];
+ 	int Aocu = 0;
+ 	int Adis;
+ 	int asientos;
+ 	float costo;
+ 	int horaS;
+ 	int minS;
+
+	printf("\t\tIngrese Ciudad Destino de la Corrida: ->");
+	scanf("%s",&cdDes);
+
+	printf("\t\tIngrese Estado de la Corrida: ->");
+	scanf("%s",&edoDes);	
+
+	printf("\t\tIngrese Costo: ->");
+	scanf("%f",&costo);	
+
+	printf("\t\tIngrese Hora de Salida [HH]: ->");
+	scanf("%d",&horaS);	
+
+	printf("\t\tIngrese Minutos de Salida [MM]: ->");
+	scanf("%d",&minS);	
+
+	printf("\t\tCuantos asientos tiene este Autobus: ->");
+	scanf("%d",&asientos);	
+
+	Corrida x;
+	x.id = indice;
+	strcpy(x.cdDes, cdDes);
+	strcpy(x.edoDes, edoDes);
+	x.Aocu = 0;
+	x.Adis = asientos;
+	x.asientos = asientos;
+	x.costo = costo;
+	x.horaS = horaS;
+	x.minS = minS;
+	int i;
+	for (i = 0; i < asientos; i++)
+		x.asignacion[i]=0;
+	return x;
+}
+
+void DesplegarCorridas()
+{
+	if (buscaUltimoCOR() ==0)
+	{
+		printf("NO HAY REGISTROS AUN\n");
+	}
+	else{
+		FILE* arch;
+		Corrida a;
+
+		//Abrimos el archivo para lectura
+		arch = fopen("corrida.dat", "r+b");
+		//La primera leida la hacemos fuera del while
+		printf("\t\tID\tDestino\t\tDisp\tPrecio\tSalida\n");
+		leerCorrida(arch,&a);
+		while(!feof(arch))
+		{
+			printf("\t\t%d ",a.id);
+			printf("\t%s",a.cdDes);
+			printf(", %s",a.edoDes);
+			printf("\t%d",a.Adis);
+			printf("/%d",a.Aocu);
+			printf("\t$%.2f",a.costo);
+			printf("\t%d:%d",a.horaS,a.minS);
+			printf("\t\t\n");
+			//leemos el sig registro del archivo
+	//		fread(&a,sizeof(Corrida),1,arch);
+			leerCorrida(arch,&a);
+		}
+		fclose(arch);
+	}
+}
+
+
+void agregaCorrida(int indice)
+{
+	FILE* arch=fopen("corrida.dat","a+b");
+	//Ingresa los datos por consola
+	Corrida reg = ingresaDatosxConsolaCOR(indice);
+	//Posicion del puntero al final del archivo .dat
+	fseek(arch,0,SEEK_END);
+	fwrite(&reg,sizeof(Corrida),1,arch);
+	fclose(arch);
+}
+
+ void buscaCorridaIndex(int index)
+ {
+	FILE* arch=fopen("corrida.dat","r+b");
+	int n = index-1;
+	//Posiciono el puntero del archivo
+	fseek(arch,n*sizeof(Corrida),SEEK_SET);
+
+	//con el puntero posicionado, leo el registro
+	Corrida reg;
+	fread(&reg,sizeof(Corrida),1,arch);
+
+	//muestro los datos de ese archivo
+	printf("\t\tD E T A L L E S :\n");
+	printf("\t\t\tID: %d ",reg.id);
+	printf("Destino: %s, ",reg.cdDes);
+	printf("%s \n",reg.edoDes);
+	printf("\t\t\tDISPONIBILIDAD: %d/",reg.Adis);
+	printf("%d ",reg.Aocu);
+	printf("PRECIO: $%.2f ",reg.costo);
+	printf(" SALIDA: %d:%d\n",reg.horaS,reg.minS);
+	printf("\n");
+
+	int i,j,val, cont = 1;
+
+ 	printf("\t\E[37;41;5m[XX]\E[00m -> OCUPADO  \E[37;42;5m[00]\E[00m -> DISPONIBLE\n");
+	printf("\t\t\t\t____________________________________\n");
+	printf("\t\t\t\t|  |(O)|                           |\n");	
+	printf("\t\t\t\t|                                  |\n");	
+	for (i = 0; i < reg.asientos; i=i+4){
+			printf("\t\t\t\t|");
+		for (j = 0; j < 4; j++)
+		{
+			if (reg.asignacion[cont-1] == 0) //OCUPADO
+				if (cont<10)
+					printf("  \E[37;42;5m[0%d]\E[00m  ",cont);
+				else
+					printf("  \E[37;42;5m[%d]\E[00m  ",cont);
+			else
+				if (cont<=reg.asientos)
+					printf("  \E[37;41;5m[XX]\E[00m  ");
+			cont ++;
+		}
+		printf("  |\n");
+	}
+	printf("\t\t\t\t|                                  |\n");
+	printf("\t\t\t\t| [  W C  ]              [  W C  ] |\n");
+	printf("\t\t\t\t|__________________________________|\n");
+
+//	for (i = 0; i < reg.asientos; i++)
+//		printf("%d-%d, ",i,reg.asignacion[i]);
+	fclose(arch);
+ }
+
+  int buscaCorrida(int idBusqueda)
+ {
+	FILE* arch=fopen("corrida.dat","r+b");
+	Corrida aux;
+	int index = 0;
+	// ->>>> BUSCANDO DATO
+	// fread(reg,sizeof(Empleado),1,arch);
+	while(fread(&aux, sizeof(aux),1,arch)!=0 && aux.id,idBusqueda!=0)
+	{
+		index++;
+	}
+	//printf("altumo %d index%d\n",buscaUltimoEMP(), index );
+	//clear();
+	fclose(arch);
+	if(buscaUltimoCOR()<=index)
+		return 0;
+	else
+		return index;
+	// ->> END
+ }
+
+ int buscaUltimoCOR(){
+ 	FILE* arch;
+	Corrida a;
+	int i;
+	//Abrimos el archivo para lectura
+	arch = fopen("corrida.dat", "r+b");
+	leerCorrida(arch,&a);
+	while(!feof(arch)){
+		i = a.id;
+		//leemos el sig registro del archivo
+		leerCorrida(arch,&a);
+	}
+	fclose(arch);
+	if (i<0)
+	{
+		i = 0;
+	}
+	//i++;
+	return i;
+ }
 
 /*
 	|------------------------------- PARA EL INICIO DE LA SES0'ION ---------------------|
@@ -276,6 +490,17 @@ void muestraTituloMenu(int type){
 			printf("\n");
 			printf("\t\t\t(B I E N V E N I D O S ) \n\t\t ( M E N U  )  ( P R I N C I P A L ) \n");
 		break;
+		case 3:
+			printf("\n");
+			printf("\t\t\t(B I E N V E N I D O S ) \n\t\t ( M E N U  )  ( V E N T A ) \n");
+		case 4:
+			printf("\n");
+			printf("\t\t\t(B I E N V E N I D O S ) \n\t\t ( M E N U  )  ( A D M I N I S T R A C I O N ) \n");
+		break;
+		case 5:
+			printf("\n");
+			printf("\t\t\t(B I E N V E N I D O S ) \n\t\t ( M E N U  )  ( C O N S U L T A ) \n");
+		break;
 	}
 }
 
@@ -288,14 +513,14 @@ void muestraMenu(int type){
 			printf("\t+-----------------------------------------------------------------------------+\n");
 		break;
 		case 2:
-			printf("\t+-------------------------------------------------------------------------------------------+\n");
+			printf("\t+------------------------------------------------------------------------------------------+\n");
 			printf("\t| SELECIONE DESTINO -> ELIJA ASIENTO -> VERIFICAR IFORMACION -> CONFIRMA VENTA | SALIR (0) |\n");
-			printf("\t+-------------------------------------------------------------------------------------------+\n");
+			printf("\t+------------------------------------------------------------------------------------------+\n");
 		break;
 		case 3:
-			printf("\t+-----------------------+----------------------+-----------+\n");
-			printf("\t| AGREGAR CORRIDAS  [1] | AGREGAR EMPLEADO [2] | SALIR [0] |\n");
-			printf("\t+-----------------------+----------------------+-----------+\n");
+			printf("\t+-----------------------+------------------+----------------------+-------------------+-----------+\n");
+			printf("\t| AGREGAR CORRIDAS  [1] | VER CORRIDAS [2] | AGREGAR EMPLEADO [3] | VER EMPLEADOS [4] | SALIR [0] |\n");
+			printf("\t+-----------------------+------------------+----------------------+-------------------+-----------+\n");
 		break;
 	}
 }
@@ -318,10 +543,6 @@ void printLogo(){
 */
 void muestraInfo(){
 	printLogo();
-	muestraTituloMenu(2);
-
-	printLogo();
-	muestraTituloMenu(2);
 	printf("\n\t\tUSER: %s\n\t\tFECHA: ",nomreUser);
 	fechaHora();
 	printf("\tTERMINAL: %s\n\n",terminal);
@@ -331,21 +552,32 @@ void menuPrincipal(){
 	int opc;
 	do{
 	muestraInfo();
+	muestraTituloMenu(2);
 	muestraMenu(1);
 	printf("\n\t\tEIJA UNA OPCION: ");
 	scanf("%i",&opc);
 		switch(opc){
 			case 1:
 				muestraInfo();
+				muestraTituloMenu(5);
 				muestraMenu(1);
-				muestraDestinos();
-				DesplegarEmpleados();
+
+				//muestraDestinos();
+				DesplegarCorridas();
+				printf("\t\tPARA VER ASIENTOS ESCRIBA EL ID DE LA CORRIDA\t\tEscriba 0 para salir\n\t\t\tID->");
+				scanf("%d",&opc);
+				if (opc!=0)
+				{
+					muestraBus(opc);
+				}
 				system("pause");
 			break;
 			case 2:
 				muestraInfo();
+				muestraTituloMenu(3);
 				muestraMenu(2);
-				muestraDestinos();
+				//muestraDestinos();
+				DesplegarCorridas();
 				printf("\t\tSELECCIONE DESTINO:  ");
 				scanf("%i",&opc);
 				muestraInfo();
@@ -370,21 +602,50 @@ void menuPrincipal(){
 
 			break;
 			case 3:
+				muestraInfo();
+				muestraTituloMenu(4);
 				muestraMenu(3);
-				printf("Elija una opcion ");
+				printf("\t\tElija una opcion ");
 				scanf("%d",&opc);
-				if (opc == 1)
-				{
-					/* Selijio agregar destino AUN NO DISPONIBLE*/
-					system("pause");
+				while(opc!=0){
+					if (opc == 1)
+					{
+						/* Selijio agregar destino AUN NO DISPONIBLE*/
+						//DesplegarCorridas();
+						printf("\t\tAgregando nuevo destino...\n");
+						agregaCorrida(buscaUltimoCOR()+1);
+						//agregaCorrida(1);
+						printf("Se ha Agregado una corrida\n");
+						system("pause");
+					}
+					else if (opc == 2)
+					{
+						/*Desplegando un todos los destinos*/
+						DesplegarCorridas();
+						system("pause");
+					}
+					else if (opc == 3)
+					{
+						/* Eligio agregar usuarios */
+						DesplegarEmpleados();
+						printf("\t\tAgregando nuevo empleado...\n");
+						agregaEmpleado(buscaUltimoEMP()+1);
+						printf("Se ha Agregado un usuario\n");
+						system("pause");
+					}
+					else if (opc == 4)
+					{
+						DesplegarEmpleados();
+						system("pause");
+					}
+
+					limpiar();
+					muestraInfo();
+					muestraMenu(3);
+					printf("\t\tElija una opcion ");
+					scanf("%d",&opc);
 				}
-				else if (opc == 2)
-				{
-					/* Eligio agregar usuarios */
-					printf("Agregando nuevo empleado\n");
-					agregaEmpleado(1);
-					system("pause");
-				}
+				opc = 99;
 			break;
 			case 4:
 				system("calc.exe");
@@ -397,22 +658,6 @@ void menuPrincipal(){
 		}
 	}
 	while(opc != 0);
-}
-
-void muestraDestinos(){
-	printf("\t\t\t\t_____________________________________________________\n");
-	printf("\t\t\t\t| ID   DESTINO         ASIENTOS  COSTO     SALIDA   |\n");
-	printf("\t\t\t\t| 1    Puebla Pue.       40/40   $240.00    15:40   |\n");
-	printf("\t\t\t\t| 2    Xalapa Ver.       35/40   $540.00    03:50   |\n");
-	printf("\t\t\t\t| 3    Tlaxcala Tlax.    20/30   $200.00    21:40   |\n");
-	printf("\t\t\t\t| 4    Pachuca Hgo.      10/30   $300.00    10:00   |\n");
-	printf("\t\t\t\t| 5    Matamoros Tam.    40/40   $1200.00   09:45   |\n");
-	printf("\t\t\t\t| 5    Cuernavaca Mor.   01/40   $560.00    14:30   |\n");
-	printf("\t\t\t\t|___________________________________________________|\n");
-}
-
-void menuAdmin(){
-
 }
 
 /*
@@ -434,24 +679,22 @@ fechaHora(){
 void muestraBus(int id){
 	//id es el numero del corrida
 	int asiento;
-	//Consultando la corrida
-	printf("\tCORRIDA: FES - DESTINO \t HORA: 15:30 \tDISPONIBLES: 25/32");
-	printf("\t\E[37;41;5m[XX]\E[00m -> OCUPADO  \E[37;42;5m[00]\E[00m -> DISPONIBLE\n");
+	id--;
+	int ultimo = buscaUltimoCOR();
+	if (ultimo <id){
+		while(ultimo<id){
+			//El ciclo se produce cuando se esta ingresando un ID no valido
+			printf("El id No es valido, escrbiba otro ->");
+			scanf("%d",&id);
+		}
+	}
 
-	printf("\t\t\t\t__________________________\n");
-	printf("\t\t\t\t| |(O)|                  |\n");	
-	printf("\t\t\t\t|                        |\n");	
-	printf("\t\t\t\t| [01] [02]    [03] [04] |\n");
-	printf("\t\t\t\t| [05] \E[37;41;5m[XX]\E[00m    [07] [08] |\n");
-	printf("\t\t\t\t| [09] [10]    [11] [12] |\n");
-	printf("\t\t\t\t| [12] [14]    [15] [16] |\n");
-	printf("\t\t\t\t| [17] \E[37;41;5m[XX]\E[00m    [19] [20] |\n");
-	printf("\t\t\t\t| [21] [22]    [23] [24] |\n");
-	printf("\t\t\t\t| [25] [26]    [27] [28] |\n");
-	printf("\t\t\t\t| [29] [30]    [31] [32] |\n");
-	printf("\t\t\t\t|                        |\n");
-	printf("\t\t\t\t| [  W C  ]    [  W C  ] |\n");
-	printf("\t\t\t\t|________________________|\n");
+	//Hasta aqui ya tebemos ID valido
+
+	buscaCorridaIndex(id); //Mostramos info de la corrida
+	//muestraBusID(id);
+	//Consultando la corrida
+	//printf("\tCORRIDA: FES - DESTINO \t HORA: 15:30 \tDISPONIBLES: 25/32");
 }
 
 int verificaAsiento(int id, int asiento){
