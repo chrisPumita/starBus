@@ -199,34 +199,6 @@ void agregaEmpleado(int indice)
  }
 
 /*
-
-  void modificarRegistro()
- {
-//Funcion para modificar un elemento especifico
-	FILE* arch=fopen(FILE_NAME_EMP,"r+b");
-	int n;
-	printf("Ingrese el ID a modificar: ->");
-	scanf("%d",&n);
-	fflush(stdout);
-	printf("Mostrando información del ID: %d\n",n);
-	
-	buscaProductoIndex(n-1);
-
-	//ingreso los nuevos datos por consola
-	Empleado reg = ingresaDatosxConsolaEMP(n);
-	n--;
-	//Posicion del indentificaro de posicion
-	fseek(arch,n*sizeof(Empleado),SEEK_SET);
-
-	//Grabo el registro reescribiendo
-	fwrite(&reg,sizeof(Empleado),1,arch);
-	fclose(arch); 	
- }
- */
-//declarando las estructuras.
-//
-
-/*
 	************* APARTADO DE CORRIDAS
  */
 void leerCorrida(FILE * arch, Corrida* reg)
@@ -376,13 +348,13 @@ void agregaCorrida(int indice)
 			printf("\t\t\t\t|");
 		for (j = 0; j < 4; j++)
 		{
-			if (reg.asignacion[cont-1] == 0) //OCUPADO
+			if (reg.asignacion[cont-1] == 0) //LIBRE
 				if (cont<10)
 					printf("  \E[37;42;5m[0%d]\E[00m  ",cont);
 				else
 					printf("  \E[37;42;5m[%d]\E[00m  ",cont);
 			else
-				if (cont<=reg.asientos)
+				if (cont<=reg.asientos) //OCUPADO
 					printf("  \E[37;41;5m[XX]\E[00m  ");
 			cont ++;
 		}
@@ -418,6 +390,24 @@ void agregaCorrida(int indice)
 	// ->> END
  }
 
+   int buscaAsiento(int idCorrida, int idAsiento)
+ {
+ 	FILE* arch=fopen("corrida.dat","r+b");
+	int n = idCorrida-1;
+	//Posiciono el puntero del archivo
+	fseek(arch,n*sizeof(Corrida),SEEK_SET);
+
+	//con el puntero posicionado, leo el registro
+	Corrida reg;
+	fread(&reg,sizeof(Corrida),1,arch);
+
+	if (reg.asignacion[idAsiento-1] == 1) //OCUPADO
+		return 0;
+	else
+		return 1;
+	fclose(arch);
+ }
+
  int buscaUltimoCOR(){
  	FILE* arch;
 	Corrida a;
@@ -438,6 +428,20 @@ void agregaCorrida(int indice)
 	//i++;
 	return i;
  }
+
+ void updateBus(int index, int lugar){
+	FILE* fp =fopen("corrida.dat","r+b");
+	int n = index-1;
+	Corrida reg;
+	reg.asignacion[lugar-1] = 1;
+	
+	//Posicion del indentificaro de posicion
+	fseek(fp,n*sizeof(Corrida),SEEK_SET);
+
+	//Grabo el registro reescribiendo
+	fwrite(&reg.asignacion,sizeof(Corrida),1,fp);
+	fclose(fp); 	
+}
 
 /*
 	|------------------------------- PARA EL INICIO DE LA SES0'ION ---------------------|
@@ -571,6 +575,7 @@ void menuPrincipal(){
 					muestraBus(opc);
 				}
 				system("pause");
+				opc = 99;
 			break;
 			case 2:
 				muestraInfo();
@@ -582,7 +587,7 @@ void menuPrincipal(){
 				scanf("%i",&opc);
 				muestraInfo();
 				muestraMenu(2);
-				muestraBus(opc);
+				int bus = muestraBus(opc);
 				printf("\t\tSELECCIONE ASIENTO:  ");
 				scanf("%i",&opc);
 				int asiento = verificaAsiento(1,opc);
@@ -597,9 +602,32 @@ void menuPrincipal(){
 				scanf("%s",&termina[0]);
 				if (termina[0] == 'Y' || termina[0] == 'y')
 				{
-					imprimirTicket();
-				}
+					//updateBus(bus,asiento); AUN NO DISPONIBLE
+					printf("\t\tAUTOBUSES STARBUS SA DE CV\n");
+					FILE* arch=fopen("corrida.dat","r+b");
+					int n = bus-1;
+					//Posiciono el puntero del archivo
+					fseek(arch,n*sizeof(Corrida),SEEK_SET);
 
+					//con el puntero posicionado, leo el registro
+					Corrida reg;
+					fread(&reg,sizeof(Corrida),1,arch);
+
+					//muestro los datos de ese archivo
+					printf("\t\tD E T A L L E S :\n");
+					printf("\tPasajero: %s \n",nombreUser);
+					printf("\t\t\tID: %d ",reg.id);
+					printf("\tDestino: %s, ",reg.cdDes);
+					printf("%s \n",reg.edoDes);
+					printf("\tPRECIO: $%.2f ",reg.costo);
+					printf("\tSALIDA: %d:%d\n",reg.horaS,reg.minS);
+					printf("\tAsiento: %d \n",asiento);
+					printf("\n");
+					fclose(arch);
+
+					system("pause");
+				}
+				opc = 99;
 			break;
 			case 3:
 				muestraInfo();
@@ -676,53 +704,36 @@ fechaHora(){
 }
 
 
-void muestraBus(int id){
+int muestraBus(int id){
 	//id es el numero del corrida
-	int asiento;
-	id--;
-	int ultimo = buscaUltimoCOR();
-	if (ultimo <id){
-		while(ultimo<id){
+	int ultimo = buscaUltimoCOR()-1;
+	if (ultimo <=id-1){
+		while(ultimo<id-1){
 			//El ciclo se produce cuando se esta ingresando un ID no valido
-			printf("El id No es valido, escrbiba otro ->");
-			scanf("%d",&id);
+			muestraInfo();
+			muestraMenu(2);
+			DesplegarCorridas();
+			printf("\nEl id No es valido, escrbiba otro ->");
+			scanf("%d",&id-1);
 		}
 	}
-
 	//Hasta aqui ya tebemos ID valido
-
 	buscaCorridaIndex(id); //Mostramos info de la corrida
-	//muestraBusID(id);
-	//Consultando la corrida
-	//printf("\tCORRIDA: FES - DESTINO \t HORA: 15:30 \tDISPONIBLES: 25/32");
+	return id;
 }
 
 int verificaAsiento(int id, int asiento){
 	//iniciamos el llenado del array de asientos del ID de corrida
-	int tam;
-	tam = 33;
-	int isFree = 0;
-	int asientos[] = {0,0,0,0,0,0,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};
+	int  isFree = buscaAsiento(id, asiento);
 	//llenado de asientos
-	while (isFree !=1){
-		if (asientos[asiento-1] != 0)
-			isFree = 1;
-		else{
-			printf("\n\t\t \E[37;41;5mAsiento ocupado\E[00m elija otro: ");
-			scanf("%d",&asiento);
-			isFree = 0;
-		}
-
+	while (isFree == 0){ //MIentras el asiento este ocupado
+		printf("\n\t\t \E[37;41;5mAsiento ocupado\E[00m elija otro: ");
+		scanf("%d",&asiento);
+		isFree = buscaAsiento(id, asiento);
 	}
 	return asiento;
 }
 
-
-int imprimirTicket(int venta){
-	printf("TICKETTTT\n");
-	system("pause");
-	return 1;
-}
 
 #if 0
 int main()
